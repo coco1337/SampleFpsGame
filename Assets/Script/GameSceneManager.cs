@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// This script contains PlayerContext and Database, Network data
-public class Player : MonoBehaviour
+// This scripts contains scene context and manage game state
+public class GameSceneManager : MonoBehaviour
 {
-
     // Start is called before the first frame update
     void Start()
     {
@@ -16,5 +15,15 @@ public class Player : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void PauseGame()
+    {
+        Time.timeScale = 0.0f;
+    }
+
+    public void ResumeGame() 
+    {
+        Time.timeScale = 1.0f;
     }
 }

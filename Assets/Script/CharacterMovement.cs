@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RigidCharacterMovement : MonoBehaviour
+public class CharacterMovement : BaseMovement
 {
     // Start is called before the first frame update
     void Start()
@@ -13,6 +13,7 @@ public class RigidCharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        ProceedRotate();
+        ProceedMove();
     }
 }
