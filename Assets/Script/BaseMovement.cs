@@ -15,11 +15,20 @@ public class BaseMovement : MonoBehaviour
     Vector3 lastRotateVector;
     Vector3 currentRotateVector;
     Vector3 totalRotateVector;
+    private void Awake()
+    {
+        lastMoveVector = Vector3.zero;
+        currentMoveVector = Vector3.zero;
+        totalMoveVector = Vector3.zero;
 
+        lastRotateVector = Vector3.zero;
+        currentRotateVector = Vector3.zero;
+        totalRotateVector = Vector3.zero;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -41,6 +50,7 @@ public class BaseMovement : MonoBehaviour
 
     public void MoveBy(Vector3 moveVector) 
     {
+        Debug.Log("MoveBy Called!");
         currentMoveVector += moveVector;
     }
 
@@ -62,13 +72,14 @@ public class BaseMovement : MonoBehaviour
         float currentMoveVectorSize = currentMoveVector.magnitude;
 
         lastMoveVector = Vector3.zero;
-        if (totalMoveVectorSize.Equals(0) && currentMoveVectorSize.Equals(0))
+
+        if ((totalMoveVectorSize == 0) && (currentMoveVectorSize == 0))
         {
             return;
         }
         else 
         {
-            if (! currentMoveVectorSize.Equals(0))
+            if (currentMoveVectorSize != 0)
             {
                 if (currentMoveVectorSize > max_speed)
                 {
@@ -81,7 +92,7 @@ public class BaseMovement : MonoBehaviour
                 currentMoveVector = Vector3.zero;
             }
 
-            if (!totalMoveVectorSize.Equals(0)) 
+            if (totalMoveVectorSize != 0) 
             { 
                 if (totalMoveVectorSize > max_speed)
                 {
@@ -97,10 +108,9 @@ public class BaseMovement : MonoBehaviour
  
             transform.position += lastMoveVector;
         }
-
-        Debug.Log("ProceedMove!");
     }
 
+    // WIP
     protected void ProceedRotate() 
     {
         if (totalRotateVector.magnitude == 0)

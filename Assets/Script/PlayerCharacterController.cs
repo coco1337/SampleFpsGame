@@ -8,6 +8,8 @@ public class PlayerCharacterController : MonoBehaviour, InputSys.IFirstPersonPla
 {
     [SerializeField]
     Character PossessedCharacter;
+
+    [SerializeField]
     BaseMovement baseMovement;
 
     GameObject CharacterPrefab;
@@ -40,10 +42,10 @@ public class PlayerCharacterController : MonoBehaviour, InputSys.IFirstPersonPla
     {
         if (PossessedCharacter != null)
         {
-            if (! Mathf.Approximately(InputMoveVector.magnitude, 0.01f))
+            if (!(Mathf.Approximately(InputMoveVector.magnitude, 0.0f)))
             {
                 Debug.Log($"{InputMoveVector}");
-                PossessedCharacter.MoveBy(InputMoveVector.normalized * Time.deltaTime * 100);
+                PossessedCharacter.MoveBy(new Vector3(InputMoveVector.x, 0, InputMoveVector.y).normalized * Time.deltaTime);
             }
         }
         else 
@@ -55,6 +57,7 @@ public class PlayerCharacterController : MonoBehaviour, InputSys.IFirstPersonPla
     public void PossessBy(Character ByPossessCharacter) 
     {
         PossessedCharacter = ByPossessCharacter;
+        PossessedCharacter.CharacterController = GetComponent<BaseCharacterController>();
     }
 
     public void Release() 

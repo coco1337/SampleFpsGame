@@ -5,22 +5,21 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     BaseMovement baseMovement;
-    BaseCharacterController baseCharacterController;
+    public BaseCharacterController CharacterController;
 
     // Start is called before the first frame update
     void Start()
     {
         baseMovement = GetComponent<BaseMovement>();
-        baseCharacterController = GetComponent<BaseCharacterController>();
 
-        if (!baseMovement) 
+        if (baseMovement == null)
         {
-            gameObject.AddComponent<BaseMovement>();
+            baseMovement = gameObject.AddComponent<BaseMovement>();
+            Debug.Log("CharacterMovement is null so create it!");
         }
-
-        if (!baseCharacterController) 
+        else
         {
-            gameObject.AddComponent<BaseCharacterController>();
+            Debug.Log("CharacterMovement is not null!");
         }
     }
 
@@ -30,10 +29,6 @@ public class Character : MonoBehaviour
         
     }
 
-    public BaseCharacterController GetController()
-    {
-        return baseCharacterController;
-    }
 
     public BaseMovement GetMovement() 
     {
@@ -42,13 +37,22 @@ public class Character : MonoBehaviour
 
     public virtual void MoveTo(Vector3 position) 
     {
-        if (baseMovement)
+        if (baseMovement != null)
+        {
+            Debug.Log("Character MoveTo!");
             baseMovement.MoveTo(position);
+        }       
     }
 
     public virtual void MoveBy(Vector3 moveVector) 
     {
-        if(baseMovement)
+        // Debug.Log("Character MoveBy!");
+        // baseMovement.MoveBy(moveVector);
+
+        if (baseMovement != null) 
+        {
+            Debug.Log("Character MoveBy!");
             baseMovement.MoveBy(moveVector);
+        }
     }
 }

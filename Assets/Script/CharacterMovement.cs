@@ -11,9 +11,4 @@ public class CharacterMovement : BaseMovement
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        ProceedRotate();
-        ProceedMove();
-    }
 }
