@@ -5,25 +5,34 @@ using UnityEngine;
 public class BaseMovement : MonoBehaviour
 {
     protected float max_speed = 10.0f;
-
     protected float max_rotate_speed = 240.0f;
 
-    Vector3 lastMoveVector;
-    Vector3 currentMoveVector;
-    Vector3 totalMoveVector;
+    bool isGravityEnabled = true;
+    float gravityScale = 1.0f;
 
-    Vector3 lastRotateVector;
+    Vector3 currentMoveVector;
+    Vector3 lastMoveVector;
+    Vector3 moveByVector;
+    Vector3 moveToVector;
+
     Vector3 currentRotateVector;
-    Vector3 totalRotateVector;
+    Vector3 lastRotateVector;
+    Vector3 rotateByVector;
+    Vector3 rotateToVector;
+    
     private void Awake()
     {
-        lastMoveVector = Vector3.zero;
         currentMoveVector = Vector3.zero;
-        totalMoveVector = Vector3.zero;
+        lastMoveVector = Vector3.zero;
+        moveByVector = Vector3.zero;
+        moveToVector = Vector3.zero;
 
-        lastRotateVector = Vector3.zero;
         currentRotateVector = Vector3.zero;
-        totalRotateVector = Vector3.zero;
+        lastMoveVector = Vector3.zero;
+        rotateByVector = Vector3.zero;
+        rotateToVector = Vector3.zero;
+        
+        isGravityEnabled = true;
     }
     // Start is called before the first frame update
     void Start()
@@ -35,101 +44,117 @@ public class BaseMovement : MonoBehaviour
     void Update()
     {
         ProceedRotate();
+        CalculateGravity();
+        CalculateMoveBy();
         ProceedMove();
     }
 
     public void CancelMoveTo() 
     {
-        totalMoveVector = Vector3.zero;
+        moveToVector = Vector3.zero;
     }
 
     public void MoveTo(Vector3 position) 
     {
-        totalMoveVector += position - transform.position;
+        moveToVector = position - transform.position;
+    }
+
+    public void AddMoveToVector(Vector3 position)
+    {
+        moveToVector += position - transform.position;
     }
 
     public void MoveBy(Vector3 moveVector) 
     {
         Debug.Log("MoveBy Called!");
-        currentMoveVector += moveVector;
+        moveByVector += moveVector;
     }
+
+    protected void CalculateGravity()
+    {
+        if (isGravityEnabled)
+        {
+            currentMoveVector += Physics.gravity * gravityScale * Time.deltaTime;
+        }
+    }
+
+    protected void CalculateMoveBy() 
+    {
+        float MoveByVectorSize = moveByVector.magnitude;
+
+        if (MoveByVectorSize != 0)
+        {
+            if (MoveByVectorSize > max_speed)
+            {
+                currentMoveVector += moveByVector.normalized * max_speed;
+            }
+            else
+            {
+                currentMoveVector += moveByVector;
+            }
+            moveByVector = Vector3.zero;
+        }
+    }
+    protected void CalculateMoveTo() 
+    {
+        float MoveToVectorSize = moveToVector.magnitude;
+
+        if (MoveToVectorSize != 0)
+        {
+            if (MoveToVectorSize > max_speed)
+            {
+                currentMoveVector += moveToVector.normalized * max_speed;
+                moveToVector -= moveToVector.normalized * max_speed;
+            }
+            else
+            {
+                currentMoveVector += moveToVector;
+                moveToVector = Vector3.zero;
+            }
+        }
+    }
+
+    protected void ProceedMove() 
+    {
+        transform.position += currentMoveVector;
+        lastMoveVector = currentMoveVector;
+        currentMoveVector = Vector3.zero;
+    }
+
 
     // This function gets eulerAngles(Vector3)
     public void RotateTo(Vector3 eulerAngles) 
     {
-        totalRotateVector += eulerAngles - transform.rotation.eulerAngles;
+        rotateToVector += eulerAngles - transform.rotation.eulerAngles;
     }
 
     // This function gets eulerAngles(Vector3)
     public void RotateBy(Vector3 eulerAngles) 
     {
-        currentRotateVector += eulerAngles;
+        rotateByVector += eulerAngles;
     }
 
-    protected void ProceedMove() 
-    {
-        float totalMoveVectorSize = totalMoveVector.magnitude;
-        float currentMoveVectorSize = currentMoveVector.magnitude;
-
-        lastMoveVector = Vector3.zero;
-
-        if ((totalMoveVectorSize == 0) && (currentMoveVectorSize == 0))
-        {
-            return;
-        }
-        else 
-        {
-            if (currentMoveVectorSize != 0)
-            {
-                if (currentMoveVectorSize > max_speed)
-                {
-                    lastMoveVector = currentMoveVector.normalized * max_speed;
-                }
-                else 
-                {
-                    lastMoveVector = currentMoveVector;
-                }
-                currentMoveVector = Vector3.zero;
-            }
-
-            if (totalMoveVectorSize != 0) 
-            { 
-                if (totalMoveVectorSize > max_speed)
-                {
-                    lastMoveVector += totalMoveVector.normalized * max_speed;
-                    totalMoveVector -= totalMoveVector.normalized * max_speed;
-                }
-                else 
-                {
-                    lastMoveVector += totalMoveVector;
-                    totalMoveVector = Vector3.zero;
-                }
-            }
- 
-            transform.position += lastMoveVector;
-        }
-    }
 
     // WIP
     protected void ProceedRotate() 
     {
-        if (totalRotateVector.magnitude == 0)
+        if (rotateToVector.magnitude == 0)
         {
             return;
         }
         else
         {
-            if (totalRotateVector.magnitude > max_speed)
+            if (rotateToVector.magnitude > max_speed)
             {
-                totalRotateVector += totalRotateVector.normalized * max_speed;
-                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + totalRotateVector.x, transform.rotation.eulerAngles.y + totalRotateVector.y, transform.rotation.eulerAngles.z + totalRotateVector.z);
-                totalRotateVector -= lastRotateVector;
+                rotateToVector += rotateToVector.normalized * max_speed;
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + rotateToVector.x, transform.rotation.eulerAngles.y + rotateToVector.y, transform.rotation.eulerAngles.z + rotateToVector.z);
+                rotateToVector -= currentRotateVector;
             }
             else
             {
-                lastRotateVector = totalRotateVector;
-                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + totalRotateVector.x, transform.rotation.eulerAngles.y + totalRotateVector.y, transform.rotation.eulerAngles.z + totalRotateVector.z);
-                totalRotateVector = lastRotateVector;
+                currentRotateVector = rotateToVector;
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + rotateToVector.x, transform.rotation.eulerAngles.y + rotateToVector.y, transform.rotation.eulerAngles.z + rotateToVector.z);
+                rotateToVector = currentRotateVector;
             }
         }
     }
