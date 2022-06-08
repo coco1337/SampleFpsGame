@@ -236,7 +236,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &823829781
 PrefabInstance:
@@ -497,12 +497,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1402481024}
   m_LocalRotation: {x: 0.5213146, y: -0, z: -0, w: 0.8533646}
-  m_LocalPosition: {x: -0.30999756, y: 12.419999, z: -6.540001}
+  m_LocalPosition: {x: 19.850002, y: 12.619999, z: -12.880001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1427040993}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 62.841, y: 0, z: 0}
 --- !u!1 &1427040977 stripped
 GameObject:
@@ -596,11 +596,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 423490000289299370, guid: dc43becdb600d864d87583229c3f78b3, type: 3}
       propertyPath: m_Name
-      value: Capsule
+      value: Character
       objectReference: {fileID: 0}
     - target: {fileID: 423490000289299374, guid: dc43becdb600d864d87583229c3f78b3, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 423490000289299374, guid: dc43becdb600d864d87583229c3f78b3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -642,5 +642,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 423490000289299368, guid: dc43becdb600d864d87583229c3f78b3, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dc43becdb600d864d87583229c3f78b3, type: 3}

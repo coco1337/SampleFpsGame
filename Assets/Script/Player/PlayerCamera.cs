@@ -5,22 +5,21 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
     // Start is called before the first frame update
-    BaseMovement camera_movement;
+    [SerializeField] GameObject targetObject;
 
-    enum ECameraMode 
+    public enum ECameraMode 
     { 
         FirstPersonView, ThirdPersonView
     }
 
-    float ThirdPersonViewDistance = 10.0f;
+    float ThirdPersonViewMaxCameraDistance;
+    Vector3 ThirdPersonViewDelta;
 
+    ECameraMode cameraMode = ECameraMode.FirstPersonView;
 
     void Start()
     {
-        if (camera_movement == null) 
-        {
-            camera_movement = gameObject.AddComponent<BaseMovement>();
-        }        
+
     }
 
     // Update is called once per frame
@@ -29,5 +28,35 @@ public class PlayerCamera : MonoBehaviour
         
     }
 
+    private void LateUpdate()
+    {
+        if (cameraMode == ECameraMode.FirstPersonView)
+        {
+            LateUpdateFirstPersonViewCamera();
+        }
+        else if (cameraMode == ECameraMode.ThirdPersonView) 
+        {
+            LateUpdateThirdPersonViewCamera();
+        }
+    }
 
+    protected void LateUpdateFirstPersonViewCamera() 
+    {
+        transform.position = targetObject.transform.position;
+    }
+
+    protected void LateUpdateThirdPersonViewCamera() 
+    { 
+    
+    }
+
+    public void SetCameraMode(ECameraMode cameraMode) 
+    {
+        this.cameraMode = cameraMode;
+    }
+
+    public void SetThirdCameraDelta(Vector3 delta) 
+    { 
+        
+    }
 }

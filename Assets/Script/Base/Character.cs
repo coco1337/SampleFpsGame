@@ -57,4 +57,20 @@ public class Character : MonoBehaviour
             baseMovement.MoveBy(moveVector * speed);
         }
     }
+
+    public virtual void RotateTo(Vector3 rotateVector)
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateTo(rotateVector);
+        }
+    }
+
+    public virtual void RotateBy(Vector3 rotateVector) 
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateBy(rotateVector);
+        }
+    }
 }
