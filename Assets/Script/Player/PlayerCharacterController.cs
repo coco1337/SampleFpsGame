@@ -56,7 +56,7 @@ public class PlayerCharacterController : MonoBehaviour
             {
                 Debug.Log($"Forward : {forwardVector} / Right : {rightVector}");
                 Vector3 moveVector = (forwardVector * inputVector.z) + (rightVector * inputVector.x);
-                PossessedCharacter.MoveBy(moveVector * Time.deltaTime);
+                PossessedCharacter.MoveBy(new Vector3(moveVector.x, 0, moveVector.z).normalized * Time.deltaTime);
             }
         }
         else 
