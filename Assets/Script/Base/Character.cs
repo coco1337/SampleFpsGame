@@ -7,6 +7,8 @@ public class Character : MonoBehaviour
     BaseMovement baseMovement;
     public BaseCharacterController CharacterController;
 
+    [SerializeField] float speed = 5.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,7 +54,24 @@ public class Character : MonoBehaviour
         if (baseMovement != null) 
         {
             Debug.Log("Character MoveBy!");
-            baseMovement.MoveBy(moveVector);
+            baseMovement.MoveBy(moveVector * speed);
+        }
+    }
+
+    public virtual void RotateTo(Vector3 rotateVector)
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateTo(rotateVector);
+        }
+    }
+
+    public virtual void RotateBy(Vector3 rotateVector) 
+    {
+        if (baseMovement != null)
+        {
+            // Rotate!
+            baseMovement.RotateBy(rotateVector);
         }
     }
 }
