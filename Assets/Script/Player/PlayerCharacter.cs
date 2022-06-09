@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerCharacter : Character
 {
-    Rigidbody rigidbody;
+    GameObject viewPoint;
     // Start is called before the first frame update
 
     // Update is called once per frame
