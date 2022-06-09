@@ -7,6 +7,8 @@ public class PlayerCamera : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] GameObject targetObject;
 
+    BaseMovement baseMovement;
+
     public enum ECameraMode 
     { 
         FirstPersonView, ThirdPersonView
@@ -19,7 +21,12 @@ public class PlayerCamera : MonoBehaviour
 
     void Start()
     {
+        if (baseMovement == null) 
+        {
+            baseMovement = gameObject.AddComponent<BaseMovement>();
+        }
 
+        transform.rotation = Quaternion.Euler(targetObject.transform.forward);
     }
 
     // Update is called once per frame
@@ -58,5 +65,39 @@ public class PlayerCamera : MonoBehaviour
     public void SetThirdCameraDelta(Vector3 delta) 
     { 
         
+    }
+
+    public virtual void MoveTo(Vector3 position)
+    {
+        if (baseMovement != null)
+        {
+            Debug.Log("Character MoveTo!");
+            baseMovement.MoveTo(position);
+        }
+    }
+
+    public virtual void MoveBy(Vector3 moveVector)
+    {
+        if (baseMovement != null)
+        {
+            Debug.Log("Character MoveBy!");
+            baseMovement.MoveBy(moveVector);
+        }
+    }
+
+    public virtual void RotateTo(Vector3 rotateVector)
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateTo(rotateVector);
+        }
+    }
+
+    public virtual void RotateBy(Vector3 rotateVector)
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateBy(rotateVector);
+        }
     }
 }

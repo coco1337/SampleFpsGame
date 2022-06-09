@@ -5,19 +5,19 @@ using UnityEngine;
 public class BaseMovement : MonoBehaviour
 {
     // this values are based on per second
-    protected float max_speed = 10.0f;
-    protected float max_moveBy_speed = 10.0f;
-    protected float max_moveTo_speed = 10.0f;
-    protected float max_acceleration = 10.0f;
-    
-    protected float max_rotate_angle = 240.0f;
-    protected float max_rotateTo_angle = 240.0f;
-    protected float max_rotateBy_angle = 240.0f;
+    public float max_speed = 10.0f;
+    public float max_moveBy_speed = 10.0f;
+    public float max_moveTo_speed = 10.0f;
+    public float max_acceleration = 10.0f;
 
-    protected bool isGravityEnabled = true;
-    
+    public float max_rotate_angle = 240.0f;
+    public float max_rotateTo_angle = 240.0f;
+    public float max_rotateBy_angle = 240.0f;
+
+    public bool isGravityEnabled = true;
+
     // default gravity constance is 9.8f (based on Physics.gravity)
-    protected float gravityScale = 1.0f;
+    public float gravityScale = 1.0f;
 
     Vector3 currentMoveVector;
     Vector3 lastMoveVector;
@@ -40,8 +40,6 @@ public class BaseMovement : MonoBehaviour
         lastMoveVector = Vector3.zero;
         rotateByVector = Vector3.zero;
         rotateToVector = Vector3.zero;
-        
-        isGravityEnabled = true;
     }
     // Start is called before the first frame update
     void Start()
@@ -53,6 +51,7 @@ public class BaseMovement : MonoBehaviour
     void Update()
     {
         DetermineRotate();
+        CalculateRotateBy();
         ProceedRotate();
 
         DetermineMove();
@@ -171,20 +170,35 @@ public class BaseMovement : MonoBehaviour
             else
             {
                 currentRotateVector = rotateToVector;
-                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateToVector);
-                rotateToVector = currentRotateVector;
+                rotateToVector = Vector3.zero;
             }
         }
     }
 
     protected void CalculateRotateBy() 
-    { 
-    
+    {
+        float rotateByVectorSize = rotateByVector.magnitude;
+
+        if (rotateByVectorSize != 0)
+        {
+            if (rotateByVectorSize > max_speed)
+            {
+                currentRotateVector += rotateByVector.normalized * max_speed;
+            }
+            else
+            {
+                currentRotateVector += rotateByVector;
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateByVector);
+            }
+            rotateByVector = Vector3.zero;
+        }
     }
 
 
     protected void ProceedRotate() 
     {
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + currentRotateVector);
+        lastRotateVector = currentRotateVector;
+        currentRotateVector = Vector3.zero;
     }
 }

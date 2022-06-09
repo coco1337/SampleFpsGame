@@ -70,6 +70,7 @@ public class Character : MonoBehaviour
     {
         if (baseMovement != null)
         {
+            // Rotate!
             baseMovement.RotateBy(rotateVector);
         }
     }
