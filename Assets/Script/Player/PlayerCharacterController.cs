@@ -6,7 +6,6 @@ public class PlayerCharacterController : MonoBehaviour
 { 
     [SerializeField] Character PossessedCharacter;
     [SerializeField] PlayerCamera playerCamera;
-    [SerializeField] BaseMovement baseMovement;
 
     GameObject CharacterPrefab;
 
@@ -15,7 +14,6 @@ public class PlayerCharacterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        baseMovement = PossessedCharacter.GetComponent<BaseMovement>();
         if (playerCamera == null) 
         {
             playerCamera = FindObjectOfType<PlayerCamera>();
@@ -57,6 +55,13 @@ public class PlayerCharacterController : MonoBehaviour
                 Debug.Log($"Forward : {forwardVector} / Right : {rightVector}");
                 Vector3 moveVector = (forwardVector * inputVector.z) + (rightVector * inputVector.x);
                 PossessedCharacter.MoveBy(new Vector3(moveVector.x, 0, moveVector.z).normalized * Time.deltaTime);
+            }
+
+            // jump
+
+            if (Input.GetKeyDown(KeyCode.Space)) 
+            {
+                PossessedCharacter.Jump();
             }
         }
         else 

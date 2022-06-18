@@ -19,15 +19,15 @@ public class BaseMovement : MonoBehaviour
     // default gravity constance is 9.8f (based on Physics.gravity)
     public float gravityScale = 1.0f;
 
-    Vector3 currentMoveVector;
-    Vector3 lastMoveVector;
-    Vector3 moveByVector;
-    Vector3 moveToVector;
+    protected Vector3 currentMoveVector;
+    protected Vector3 lastMoveVector;
+    protected Vector3 moveByVector;
+    protected Vector3 moveToVector;
 
-    Vector3 currentRotateVector;
-    Vector3 lastRotateVector;
-    Vector3 rotateByVector;
-    Vector3 rotateToVector;
+    protected Vector3 currentRotateVector;
+    protected Vector3 lastRotateVector;
+    protected Vector3 rotateByVector;
+    protected Vector3 rotateToVector;
     
     private void Awake()
     {
@@ -149,7 +149,7 @@ public class BaseMovement : MonoBehaviour
         rotateByVector += eulerAngles;
     }
 
-    private void DetermineRotate() 
+    protected void DetermineRotate() 
     { 
 
     }
