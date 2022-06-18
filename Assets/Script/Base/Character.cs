@@ -7,7 +7,8 @@ public class Character : MonoBehaviour
     CharacterMovement baseMovement;
     public BaseCharacterController CharacterController;
 
-    [SerializeField] float speed = 5.0f;
+    [SerializeField] float speed = 200.0f;
+    [SerializeField] float jumpPower = 5.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -77,6 +78,9 @@ public class Character : MonoBehaviour
 
     public void Jump() 
     {
-        baseMovement.Jump();
+        if (baseMovement.GetIsGrounded()) 
+        {
+            baseMovement.Jump(jumpPower);
+        }
     }
 }

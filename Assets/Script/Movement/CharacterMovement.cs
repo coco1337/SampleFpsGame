@@ -4,12 +4,13 @@ using UnityEngine;
 
 // Character is having mass, mass center and can be affected gravity
 // alse having various moving states (walk, run, swim, etc.)
-// This project uses this codes instead of rigidbody
 
 public class CharacterMovement : BaseMovement
 {
     //
     [SerializeField] Animator characterMovementAnimator;
+    [SerializeField] CapsuleCollider collider;
+    [SerializeField] Rigidbody rigidbody;
 
     // Animator Parameters
     bool Jumped = false;
@@ -19,21 +20,28 @@ public class CharacterMovement : BaseMovement
     Vector3 headPoint;
     Vector3 bottomPoint;
 
+    float height { get { return collider.height; } }
+    float skin_width = 0.02f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        characterMovementAnimator = GetComponent<Animator>(); 
+        collider = GetComponent<CapsuleCollider>();
+
+        rigidbody = GetComponent<Rigidbody>();
+        if (rigidbody == null)
+        {
+            rigidbody = gameObject.AddComponent<Rigidbody>();
+            rigidbody.freezeRotation = true;
+            rigidbody.useGravity = true;
+        }
     }
 
     private void Update()
     {
-        DetermineRotate();
         CalculateRotateBy();
         ProceedRotate();
-
-        DetermineMove();
-        CalculateGravity();
         CalculateMoveBy();
         ProceedMove();
 
@@ -43,7 +51,8 @@ public class CharacterMovement : BaseMovement
 
     void CalculateAnimationParameters() 
     {
-        Blend = lastMoveVector.magnitude / max_speed * 4;
+        Blend = lastMoveVector.magnitude / Max_speed * 400;
+        CheckGround();
     }
 
     void ApplyAnimationParameters() 
@@ -55,10 +64,31 @@ public class CharacterMovement : BaseMovement
         Jumped = false;
     }
 
-    public void Jump() 
+    public void Jump(float jumpPower) 
     {
         Jumped = true;
-        MoveBy(new Vector3(0, 1, 0));
+        rigidbody.AddForce(transform.up * jumpPower, ForceMode.Impulse);
     }
-    // Update is called once per frame
+
+    private void CheckGround() 
+    {
+        Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skin_width), Color.red);
+        Debug.Log($"IsGrounded : {IsGrounded}");
+        IsGrounded = Physics.Raycast(transform.position, -Vector3.up, height / 2 + skin_width);
+    }
+
+    protected override void ApplyRotate() 
+    {
+        rigidbody.MoveRotation(Quaternion.Euler(transform.rotation.eulerAngles + currentRotateVector));
+    }
+
+    protected override void ApplyMove() 
+    {
+        rigidbody.AddForce(currentMoveVector, ForceMode.Force);
+    }
+
+    public bool GetIsGrounded() 
+    {
+        return IsGrounded;
+    }
 }

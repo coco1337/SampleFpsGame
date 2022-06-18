@@ -5,19 +5,19 @@ using UnityEngine;
 public class BaseMovement : MonoBehaviour
 {
     // this values are based on per second
+    // must multiply deltaTime
     public float max_speed = 10.0f;
     public float max_moveBy_speed = 10.0f;
     public float max_moveTo_speed = 10.0f;
     public float max_acceleration = 10.0f;
 
+    protected float Max_speed { get { return max_speed * Time.deltaTime; } }
+
     public float max_rotate_angle = 240.0f;
     public float max_rotateTo_angle = 240.0f;
     public float max_rotateBy_angle = 240.0f;
 
-    public bool isGravityEnabled = true;
-
-    // default gravity constance is 9.8f (based on Physics.gravity)
-    public float gravityScale = 1.0f;
+    protected float Max_rotate_angle { get { return max_rotate_angle * Time.deltaTime; } }
 
     protected Vector3 currentMoveVector;
     protected Vector3 lastMoveVector;
@@ -28,7 +28,7 @@ public class BaseMovement : MonoBehaviour
     protected Vector3 lastRotateVector;
     protected Vector3 rotateByVector;
     protected Vector3 rotateToVector;
-    
+
     private void Awake()
     {
         currentMoveVector = Vector3.zero;
@@ -50,22 +50,21 @@ public class BaseMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DetermineRotate();
         CalculateRotateBy();
         ProceedRotate();
 
-        DetermineMove();
-        CalculateGravity();
         CalculateMoveBy();
         ProceedMove();
     }
+
+    #region move
 
     public void CancelMoveTo() 
     {
         moveToVector = Vector3.zero;
     }
 
-    public void MoveTo(Vector3 position) 
+    public virtual void MoveTo(Vector3 position) 
     {
         moveToVector = position - transform.position;
     }
@@ -75,28 +74,21 @@ public class BaseMovement : MonoBehaviour
         moveToVector += position - transform.position;
     }
 
-    public void MoveBy(Vector3 moveVector) 
+    public virtual void MoveBy(Vector3 moveVector) 
     {
         moveByVector += moveVector;
     }
 
-    protected void CalculateGravity()
-    {
-        if (isGravityEnabled)
-        {
-            currentMoveVector += Physics.gravity * gravityScale * Time.deltaTime;
-        }
-    }
 
-    protected void CalculateMoveBy() 
+    protected virtual void CalculateMoveBy() 
     {
         float MoveByVectorSize = moveByVector.magnitude;
 
         if (MoveByVectorSize != 0)
         {
-            if (MoveByVectorSize > max_speed)
+            if (MoveByVectorSize > Max_speed)
             {
-                currentMoveVector += moveByVector.normalized * max_speed;
+                currentMoveVector += moveByVector.normalized * Max_speed;
             }
             else
             {
@@ -111,10 +103,10 @@ public class BaseMovement : MonoBehaviour
 
         if (MoveToVectorSize != 0)
         {
-            if (MoveToVectorSize > max_speed)
+            if (MoveToVectorSize > Max_speed)
             {
-                currentMoveVector += moveToVector.normalized * max_speed;
-                moveToVector -= moveToVector.normalized * max_speed;
+                currentMoveVector += moveToVector.normalized * Max_speed;
+                moveToVector -= moveToVector.normalized * Max_speed;
             }
             else
             {
@@ -124,18 +116,21 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    protected void DetermineMove() 
+    protected virtual void ApplyMove() 
     {
-    
+        transform.position += currentMoveVector;
     }
 
     protected void ProceedMove() 
     {
-        transform.position += currentMoveVector;
+        ApplyMove();
         lastMoveVector = currentMoveVector;
         currentMoveVector = Vector3.zero;
     }
 
+    #endregion
+
+    #region rotate
 
     // This function gets eulerAngles(Vector3)
     public void RotateTo(Vector3 eulerAngles) 
@@ -149,21 +144,15 @@ public class BaseMovement : MonoBehaviour
         rotateByVector += eulerAngles;
     }
 
-    protected void DetermineRotate() 
-    { 
-
-    }
-    // WIP
-
     private void CalculateRotateTo()
     {
         float rotateToVectorSize = rotateToVector.magnitude;
 
         if (rotateToVectorSize != 0) 
         {
-            if (rotateToVectorSize > max_speed)
+            if (rotateToVectorSize > Max_rotate_angle)
             {
-                currentRotateVector += rotateToVector.normalized * max_speed;
+                currentRotateVector += rotateToVector.normalized * Max_rotate_angle;
                 
                 rotateToVector -= currentRotateVector;
             }
@@ -181,9 +170,9 @@ public class BaseMovement : MonoBehaviour
 
         if (rotateByVectorSize != 0)
         {
-            if (rotateByVectorSize > max_speed)
+            if (rotateByVectorSize > Max_rotate_angle)
             {
-                currentRotateVector += rotateByVector.normalized * max_speed;
+                currentRotateVector += rotateByVector.normalized * Max_rotate_angle;
             }
             else
             {
@@ -194,11 +183,17 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
+    protected virtual void ApplyRotate() 
+    {
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + currentRotateVector);
+    }
 
     protected void ProceedRotate() 
     {
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + currentRotateVector);
+        ApplyRotate();
         lastRotateVector = currentRotateVector;
         currentRotateVector = Vector3.zero;
     }
+
+#endregion
 }
