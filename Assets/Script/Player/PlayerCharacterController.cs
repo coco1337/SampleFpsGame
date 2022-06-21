@@ -9,7 +9,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     GameObject CharacterPrefab;
 
-    float cameraMoveSensivity = 5.0f;
+    [SerializeField] float rotateSensivity = 5.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -36,14 +36,14 @@ public class PlayerCharacterController : MonoBehaviour
             if (!(Mathf.Approximately(characterRotateVector.magnitude, 0.0f)))
             {
                 // Debug.Log($"Rotate! : {characterRotateVector}");
-                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * cameraMoveSensivity);
-                playerCamera.RotateBy(characterRotateVector * Time.deltaTime * cameraMoveSensivity);
+                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
+                // playerCamera.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // camera rotate
             if (!(Mathf.Approximately(cameraRotateVector.magnitude, 0.0f)))
             {
-                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * cameraMoveSensivity);
+                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // move

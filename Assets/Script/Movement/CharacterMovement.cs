@@ -26,7 +26,10 @@ public class CharacterMovement : BaseMovement
     // Start is called before the first frame update
     void Start()
     {
-        characterMovementAnimator = GetComponent<Animator>(); 
+        if(characterMovementAnimator == null) 
+        {
+            characterMovementAnimator = GetComponent<Animator>();
+        }
         collider = GetComponent<CapsuleCollider>();
 
         rigidbody = GetComponent<Rigidbody>();
@@ -84,7 +87,7 @@ public class CharacterMovement : BaseMovement
 
     protected override void ApplyMove() 
     {
-        rigidbody.AddForce(currentMoveVector, ForceMode.Force);
+        rigidbody.MovePosition(transform.position + currentMoveVector);
     }
 
     public bool GetIsGrounded() 
