@@ -6,8 +6,9 @@ public class PlayerCamera : MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField] GameObject targetObject;
-
+    [SerializeField] Vector3 correctionPosition;
     BaseMovement baseMovement;
+    
 
     public enum ECameraMode 
     { 
@@ -49,7 +50,8 @@ public class PlayerCamera : MonoBehaviour
 
     protected void LateUpdateFirstPersonViewCamera() 
     {
-        transform.position = targetObject.transform.position;
+        transform.position = targetObject.transform.position + correctionPosition + targetObject.transform.forward * 0.2f;
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, targetObject.transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
     }
 
     protected void LateUpdateThirdPersonViewCamera() 

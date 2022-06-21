@@ -6,16 +6,14 @@ public class PlayerCharacterController : MonoBehaviour
 { 
     [SerializeField] Character PossessedCharacter;
     [SerializeField] PlayerCamera playerCamera;
-    [SerializeField] BaseMovement baseMovement;
 
     GameObject CharacterPrefab;
 
-    float cameraMoveSensivity = 5.0f;
+    [SerializeField] float rotateSensivity = 5.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        baseMovement = PossessedCharacter.GetComponent<BaseMovement>();
         if (playerCamera == null) 
         {
             playerCamera = FindObjectOfType<PlayerCamera>();
@@ -38,14 +36,14 @@ public class PlayerCharacterController : MonoBehaviour
             if (!(Mathf.Approximately(characterRotateVector.magnitude, 0.0f)))
             {
                 // Debug.Log($"Rotate! : {characterRotateVector}");
-                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * cameraMoveSensivity);
-                playerCamera.RotateBy(characterRotateVector * Time.deltaTime * cameraMoveSensivity);
+                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
+                // playerCamera.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // camera rotate
             if (!(Mathf.Approximately(cameraRotateVector.magnitude, 0.0f)))
             {
-                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * cameraMoveSensivity);
+                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // move
@@ -57,6 +55,13 @@ public class PlayerCharacterController : MonoBehaviour
                 Debug.Log($"Forward : {forwardVector} / Right : {rightVector}");
                 Vector3 moveVector = (forwardVector * inputVector.z) + (rightVector * inputVector.x);
                 PossessedCharacter.MoveBy(new Vector3(moveVector.x, 0, moveVector.z).normalized * Time.deltaTime);
+            }
+
+            // jump
+
+            if (Input.GetKeyDown(KeyCode.Space)) 
+            {
+                PossessedCharacter.Jump();
             }
         }
         else 
