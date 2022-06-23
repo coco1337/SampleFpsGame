@@ -87,7 +87,8 @@ public class CharacterMovement : BaseMovement
 
     protected override void ApplyMove() 
     {
-        rigidbody.MovePosition(transform.position + currentMoveVector);
+        base.ApplyMove();
+        // rigidbody.MovePosition(transform.position + currentMoveVector);
     }
 
     public bool GetIsGrounded() 

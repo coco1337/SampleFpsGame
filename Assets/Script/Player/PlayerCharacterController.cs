@@ -47,6 +47,7 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
             // move
+            /*
             Vector3 forwardVector = playerCamera.transform.forward.normalized;
             Vector3 rightVector = playerCamera.transform.right.normalized;
             Vector3 inputVector = new Vector3(Input.GetAxis("Horizontal"), 0 ,Input.GetAxis("Vertical"));
@@ -56,7 +57,13 @@ public class PlayerCharacterController : MonoBehaviour
                 Vector3 moveVector = (forwardVector * inputVector.z) + (rightVector * inputVector.x);
                 PossessedCharacter.MoveBy(new Vector3(moveVector.x, 0, moveVector.z).normalized * Time.deltaTime);
             }
+            */
 
+            Vector3 inputVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            if (!(Mathf.Approximately(inputVector.magnitude, 0.0f)))
+            {
+                PossessedCharacter.Move(inputVector);
+            }
             // jump
 
             if (Input.GetKeyDown(KeyCode.Space)) 

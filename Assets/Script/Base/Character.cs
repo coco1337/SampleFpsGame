@@ -9,6 +9,9 @@ public class Character : MonoBehaviour
 
     [SerializeField] float speed = 200.0f;
     [SerializeField] float jumpPower = 5.0f;
+    
+    // 임시 영역
+    [SerializeField] Rigidbody rigidbody;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +39,13 @@ public class Character : MonoBehaviour
     public CharacterMovement GetMovement() 
     {
         return baseMovement;
+    }
+
+    public void Move(Vector3 moveVector) 
+    {
+        Vector3 rigidMoveVector = (transform.forward * moveVector.z) + (transform.right * moveVector.x);
+        rigidbody.MovePosition(transform.position + rigidMoveVector * Time.deltaTime * speed);
+        // transform.Translate(moveVector * Time.deltaTime * speed);
     }
 
     public virtual void MoveTo(Vector3 position) 
