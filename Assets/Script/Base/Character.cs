@@ -15,17 +15,13 @@ public class Character : MonoBehaviour
     // 임시 영역
     [SerializeField] Rigidbody rigidbody;
 
+    // Animation Parameters
     bool Jumped = false;
     float Blend = 0.0f;
     bool IsGrounded = true;
 
-    Vector3 headPoint;
-    Vector3 bottomPoint;
-
     float height { get { return collider.height; } }
     float skin_width = 0.02f;
-
-    Vector3 lastMoveVector;
 
     // Start is called before the first frame update
     void Start()
@@ -42,10 +38,11 @@ public class Character : MonoBehaviour
 
     public void Move(Vector3 moveVector) 
     {
-        Vector3 rigidMoveVector = (transform.forward * moveVector.z) + (transform.right * moveVector.x);
-        rigidbody.MovePosition(transform.position + rigidMoveVector * Time.deltaTime * speed);
-        lastMoveVector = rigidMoveVector;
-        // transform.Translate(moveVector * Time.deltaTime * speed);
+        Vector3 rigidMoveVector = ((transform.forward * moveVector.z) + (transform.right * moveVector.x)) * Time.deltaTime * speed;
+        rigidbody.MovePosition(transform.position + rigidMoveVector);
+        
+        Blend = rigidMoveVector.magnitude / maxSpeed;
+        characterMovementAnimator.SetFloat("Blend", Blend);
     }
 
     public void Rotate(Vector3 rotateVector) 
@@ -61,7 +58,6 @@ public class Character : MonoBehaviour
 
     void CalculateAnimationParameters()
     {
-        Blend = lastMoveVector.magnitude / maxSpeed;
         CheckGround();
     }
 
