@@ -36,14 +36,14 @@ public class PlayerCharacterController : MonoBehaviour
             if (!(Mathf.Approximately(characterRotateVector.magnitude, 0.0f)))
             {
                 // Debug.Log($"Rotate! : {characterRotateVector}");
-                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
+                PossessedCharacter.Rotate(characterRotateVector * Time.deltaTime * rotateSensivity);
                 // playerCamera.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // camera rotate
             if (!(Mathf.Approximately(cameraRotateVector.magnitude, 0.0f)))
             {
-                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * rotateSensivity);
+                playerCamera.Rotate(cameraRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // move

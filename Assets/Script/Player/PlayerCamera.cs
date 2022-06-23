@@ -7,8 +7,6 @@ public class PlayerCamera : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] GameObject targetObject;
     [SerializeField] Vector3 correctionPosition;
-    BaseMovement baseMovement;
-    
 
     public enum ECameraMode 
     { 
@@ -22,11 +20,6 @@ public class PlayerCamera : MonoBehaviour
 
     void Start()
     {
-        if (baseMovement == null) 
-        {
-            baseMovement = gameObject.AddComponent<BaseMovement>();
-        }
-
         transform.rotation = Quaternion.Euler(targetObject.transform.forward);
     }
 
@@ -68,38 +61,8 @@ public class PlayerCamera : MonoBehaviour
     { 
         
     }
-
-    public virtual void MoveTo(Vector3 position)
+    public void Rotate(Vector3 rotateVector)
     {
-        if (baseMovement != null)
-        {
-            Debug.Log("Character MoveTo!");
-            baseMovement.MoveTo(position);
-        }
-    }
-
-    public virtual void MoveBy(Vector3 moveVector)
-    {
-        if (baseMovement != null)
-        {
-            Debug.Log("Character MoveBy!");
-            baseMovement.MoveBy(moveVector);
-        }
-    }
-
-    public virtual void RotateTo(Vector3 rotateVector)
-    {
-        if (baseMovement != null)
-        {
-            baseMovement.RotateTo(rotateVector);
-        }
-    }
-
-    public virtual void RotateBy(Vector3 rotateVector)
-    {
-        if (baseMovement != null)
-        {
-            baseMovement.RotateBy(rotateVector);
-        }
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateVector);
     }
 }

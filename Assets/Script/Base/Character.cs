@@ -4,93 +4,85 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    CharacterMovement baseMovement;
     public BaseCharacterController CharacterController;
 
-    [SerializeField] float speed = 200.0f;
+    [SerializeField] float speed = 3.0f;
+    [SerializeField] float maxSpeed = 5.0f;
     [SerializeField] float jumpPower = 5.0f;
-    
+
+    [SerializeField] Animator characterMovementAnimator;
+    [SerializeField] CapsuleCollider collider;
     // 임시 영역
     [SerializeField] Rigidbody rigidbody;
+
+    bool Jumped = false;
+    float Blend = 0.0f;
+    bool IsGrounded = true;
+
+    Vector3 headPoint;
+    Vector3 bottomPoint;
+
+    float height { get { return collider.height; } }
+    float skin_width = 0.02f;
+
+    Vector3 lastMoveVector;
 
     // Start is called before the first frame update
     void Start()
     {
-        baseMovement = GetComponent<CharacterMovement>();
 
-        if (baseMovement == null)
-        {
-            baseMovement = gameObject.AddComponent<CharacterMovement>();
-            Debug.Log("CharacterMovement is null so create it!");
-        }
-        else
-        {
-            Debug.Log("CharacterMovement is not null!");
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-
-    public CharacterMovement GetMovement() 
-    {
-        return baseMovement;
+        CalculateAnimationParameters();
+        ApplyAnimationParameters();
     }
 
     public void Move(Vector3 moveVector) 
     {
         Vector3 rigidMoveVector = (transform.forward * moveVector.z) + (transform.right * moveVector.x);
         rigidbody.MovePosition(transform.position + rigidMoveVector * Time.deltaTime * speed);
+        lastMoveVector = rigidMoveVector;
         // transform.Translate(moveVector * Time.deltaTime * speed);
     }
 
-    public virtual void MoveTo(Vector3 position) 
+    public void Rotate(Vector3 rotateVector) 
     {
-        if (baseMovement != null)
-        {
-            Debug.Log("Character MoveTo!");
-            baseMovement.MoveTo(position);
-        }       
-    }
-
-    public virtual void MoveBy(Vector3 moveVector) 
-    {
-        // Debug.Log("Character MoveBy!");
-        // baseMovement.MoveBy(moveVector);
-
-        if (baseMovement != null) 
-        {
-            Debug.Log("Character MoveBy!");
-            baseMovement.MoveBy(moveVector * speed);
-        }
-    }
-
-    public virtual void RotateTo(Vector3 rotateVector)
-    {
-        if (baseMovement != null)
-        {
-            baseMovement.RotateTo(rotateVector);
-        }
-    }
-
-    public virtual void RotateBy(Vector3 rotateVector) 
-    {
-        if (baseMovement != null)
-        {
-            // Rotate!
-            baseMovement.RotateBy(rotateVector);
-        }
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateVector);
     }
 
     public void Jump() 
     {
-        if (baseMovement.GetIsGrounded()) 
-        {
-            baseMovement.Jump(jumpPower);
-        }
+        Jumped = true;
+        rigidbody.AddForce(new Vector3(0, 1, 0) * jumpPower, ForceMode.Impulse);
+    }
+
+    void CalculateAnimationParameters()
+    {
+        Blend = lastMoveVector.magnitude / maxSpeed;
+        CheckGround();
+    }
+
+    void ApplyAnimationParameters()
+    {
+        characterMovementAnimator.SetBool("Jumped", Jumped);
+        characterMovementAnimator.SetFloat("Blend", Blend);
+        characterMovementAnimator.SetBool("IsGrounded", IsGrounded);
+
+        Jumped = false;
+    }
+
+    private void CheckGround()
+    {
+        Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skin_width), Color.red);
+        Debug.Log($"IsGrounded : {IsGrounded}");
+        IsGrounded = Physics.Raycast(transform.position, -Vector3.up, height / 2 + skin_width);
+    }
+
+    public bool GetIsGrounded()
+    {
+        return IsGrounded;
     }
 }
