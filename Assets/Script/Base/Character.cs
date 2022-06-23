@@ -7,7 +7,7 @@ public class Character : MonoBehaviour
     public BaseCharacterController CharacterController;
 
     [SerializeField] float speed = 3.0f;
-    [SerializeField] float maxSpeed = 5.0f;
+    [SerializeField] float maxSpeed = 1.0f;
     [SerializeField] float jumpPower = 5.0f;
 
     [SerializeField] Animator characterMovementAnimator;
@@ -41,7 +41,7 @@ public class Character : MonoBehaviour
         Vector3 rigidMoveVector = ((transform.forward * moveVector.z) + (transform.right * moveVector.x)) * Time.deltaTime * speed;
         rigidbody.MovePosition(transform.position + rigidMoveVector);
         
-        Blend = rigidMoveVector.magnitude / maxSpeed;
+        Blend = rigidMoveVector.magnitude / (maxSpeed * Time.deltaTime);
         characterMovementAnimator.SetFloat("Blend", Blend);
     }
 
@@ -64,17 +64,19 @@ public class Character : MonoBehaviour
     void ApplyAnimationParameters()
     {
         characterMovementAnimator.SetBool("Jumped", Jumped);
-        characterMovementAnimator.SetFloat("Blend", Blend);
         characterMovementAnimator.SetBool("IsGrounded", IsGrounded);
-
-        Jumped = false;
     }
 
     private void CheckGround()
     {
         Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skin_width), Color.red);
-        Debug.Log($"IsGrounded : {IsGrounded}");
+        D.Log($"IsGrounded : {IsGrounded}");
         IsGrounded = Physics.Raycast(transform.position, -Vector3.up, height / 2 + skin_width);
+
+        if (IsGrounded) 
+        {
+            Jumped = false;
+        }
     }
 
     public bool GetIsGrounded()

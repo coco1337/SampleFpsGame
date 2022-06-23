@@ -14,7 +14,4 @@ public class PlayerCharacter : Character
     [SerializeField] GameObject weaponSecondary;
     [SerializeField] GameObject weaponMelee;
 
-    void Update()
-    {
-    }
 }
