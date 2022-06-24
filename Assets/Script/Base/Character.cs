@@ -2,85 +2,131 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CapsuleCollider))]
 public class Character : MonoBehaviour
 {
-    public BaseCharacterController CharacterController;
+  public BaseCharacterController CharacterController;
 
-    [SerializeField] float speed = 3.0f;
-    [SerializeField] float maxSpeed = 1.0f;
-    [SerializeField] float jumpPower = 5.0f;
+  [SerializeField] private float speed = 3.0f;
+  [SerializeField] private float maxSpeed = 1.0f;
+  [SerializeField] private float jumpPower = 5.0f;
 
-    [SerializeField] Animator characterMovementAnimator;
-    [SerializeField] CapsuleCollider collider;
-    // 임시 영역
-    [SerializeField] Rigidbody rigidbody;
+  [SerializeField] private Animator characterMovementAnimator;
+  [SerializeField] private CapsuleCollider capsuleCollider;
+  // 임시 영역
+  [SerializeField] private Rigidbody characterRigidbody;
 
-    // Animation Parameters
-    bool Jumped = false;
-    float Blend = 0.0f;
-    bool IsGrounded = true;
+  // Animation Parameters
+  private bool jumped = false;
+  private readonly int JUMPED = Animator.StringToHash("Jumped");
+  private float blend = 0.0f;
+  private readonly int BLEND = Animator.StringToHash("Blend");
+  private bool isGrounded = true;
+  private readonly int IS_GROUNDED = Animator.StringToHash("IsGrounded");
 
-    float height { get { return collider.height; } }
-    float skin_width = 0.02f;
+  private float height { get { return capsuleCollider.height; } }
+  private float skinWidth = 0.02f;
 
-    // Start is called before the first frame update
-    void Start()
+  private float wallCheckDistance;
+
+  public bool GetIsGrounded() => isGrounded;
+
+  // Start is called before the first frame update
+  private void Start()
+  {
+    capsuleCollider = GetComponent<CapsuleCollider>();
+    characterRigidbody = GetComponent<Rigidbody>();
+    wallCheckDistance = 3f * capsuleCollider.radius;
+  }
+
+  // Update is called once per frame
+  private void Update()
+  {
+    CalculateAnimationParameters();
+    ApplyAnimationParameters();
+  }
+
+  public void Move(Vector3 moveVector)
+  {
+    var rigidMoveVector = WallCheck(speed * Time.deltaTime * ((transform.forward * moveVector.z) + (transform.right * moveVector.x)));
+    characterRigidbody.MovePosition(transform.position + rigidMoveVector);
+
+    blend = rigidMoveVector.magnitude / (maxSpeed * Time.deltaTime);
+    characterMovementAnimator.SetFloat(BLEND, blend);
+  }
+
+  public void Rotate(Vector3 rotateVector)
+  {
+    transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateVector);
+  }
+
+  public void Jump()
+  {
+    if (!isGrounded || jumped) return;
+    jumped = true;
+    characterRigidbody.AddForce(new Vector3(0, 1, 0) * jumpPower, ForceMode.Impulse);
+  }
+
+  private void CalculateAnimationParameters()
+  {
+    CheckGround();
+  }
+
+  private void ApplyAnimationParameters()
+  {
+    characterMovementAnimator.SetBool(JUMPED, jumped);
+    characterMovementAnimator.SetBool(IS_GROUNDED, isGrounded);
+  }
+
+  private void CheckGround()
+  {
+    Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skinWidth), Color.red);
+    // D.Log($"IsGrounded : {isGrounded}");
+
+    // TODO : fix ground check on top-end of slope
+    isGrounded = characterRigidbody.velocity.y <= 0 && Physics.Raycast(transform.position, Vector3.down, height / 2 + skinWidth);
+
+    if (isGrounded)
     {
-
+      jumped = false;
     }
+  }  
 
-    // Update is called once per frame
-    void Update()
+  private Vector3 WallCheck(Vector3 moveVector)
+  {
+    // TODO : check with different height, slope
+    CheckAxisX(ref moveVector);
+    CheckAxisY(ref moveVector);
+    CheckAxisZ(ref moveVector);
+
+    // Debug.DrawRay(transform.position, moveVector * 20);
+    return moveVector;
+  }
+
+  private void CharacterAxisCheck(Vector3 direction, ref Vector3 moveVector)
+  {
+    if (Physics.Raycast(transform.position, direction, out var hitWall, wallCheckDistance))
     {
-        CalculateAnimationParameters();
-        ApplyAnimationParameters();
+      moveVector += ((Vector3.Dot(moveVector.normalized, -hitWall.normal) * moveVector.magnitude) * hitWall.normal);
     }
+  }
 
-    public void Move(Vector3 moveVector) 
-    {
-        Vector3 rigidMoveVector = ((transform.forward * moveVector.z) + (transform.right * moveVector.x)) * Time.deltaTime * speed;
-        rigidbody.MovePosition(transform.position + rigidMoveVector);
-        
-        Blend = rigidMoveVector.magnitude / (maxSpeed * Time.deltaTime);
-        characterMovementAnimator.SetFloat("Blend", Blend);
-    }
+  private void CheckAxisX(ref Vector3 moveVector)
+  {
+    if (moveVector.x == 0) return;
+    CharacterAxisCheck(new Vector3(moveVector.x > 0 ? 1 : -1, 0, 0), ref moveVector);
+  }
 
-    public void Rotate(Vector3 rotateVector) 
-    {
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateVector);
-    }
+  private void CheckAxisY(ref Vector3 moveVector)
+  {
+    if (moveVector.y == 0) return;
+    CharacterAxisCheck(new Vector3(0, moveVector.y > 0 ? 1 : -1, 0), ref moveVector);
+  }
 
-    public void Jump() 
-    {
-        Jumped = true;
-        rigidbody.AddForce(new Vector3(0, 1, 0) * jumpPower, ForceMode.Impulse);
-    }
-
-    void CalculateAnimationParameters()
-    {
-        CheckGround();
-    }
-
-    void ApplyAnimationParameters()
-    {
-        characterMovementAnimator.SetBool("Jumped", Jumped);
-        characterMovementAnimator.SetBool("IsGrounded", IsGrounded);
-    }
-
-    private void CheckGround()
-    {
-        Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skin_width), Color.red);
-        D.Log($"IsGrounded : {IsGrounded}");
-        IsGrounded = Physics.Raycast(transform.position, -Vector3.up, height / 2 + skin_width);
-
-        if (IsGrounded) 
-        {
-            Jumped = false;
-        }
-    }
-
-    public bool GetIsGrounded()
-    {
-        return IsGrounded;
-    }
+  private void CheckAxisZ(ref Vector3 moveVector)
+  {
+    if (moveVector.z == 0) return;
+    CharacterAxisCheck(new Vector3(0, 0, moveVector.z > 0 ? 1 : -1), ref moveVector);
+  }
 }
