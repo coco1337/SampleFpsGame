@@ -30,6 +30,8 @@ public class Character : MonoBehaviour
 
   private float wallCheckDistance;
 
+  private Vector3 groundCheckOffset;
+
   public bool GetIsGrounded() => isGrounded;
 
   // Start is called before the first frame update
@@ -38,6 +40,7 @@ public class Character : MonoBehaviour
     capsuleCollider = GetComponent<CapsuleCollider>();
     characterRigidbody = GetComponent<Rigidbody>();
     wallCheckDistance = 3f * capsuleCollider.radius;
+    groundCheckOffset = new Vector3(0, -(capsuleCollider.height / 2) + capsuleCollider.radius - 0.05f, 0);
   }
 
   // Update is called once per frame
@@ -81,17 +84,25 @@ public class Character : MonoBehaviour
 
   private void CheckGround()
   {
-    Debug.DrawRay(transform.position, -Vector3.up * (height / 2 + skinWidth), Color.red);
+    // Debug.DrawRay(transform.position, Vector3.down * (height / 2 + skinWidth), Color.red);
     // D.Log($"IsGrounded : {isGrounded}");
 
     // TODO : fix ground check on top-end of slope
-    isGrounded = characterRigidbody.velocity.y <= 0 && Physics.Raycast(transform.position, Vector3.down, height / 2 + skinWidth);
+    isGrounded = Physics.CheckSphere(transform.position + groundCheckOffset, capsuleCollider.radius, 1 << LayerMask.NameToLayer("Ground"));
+    // isGrounded = characterRigidbody.velocity.y <= 0 && Physics.Raycast(transform.position, Vector3.down, height / 2 + skinWidth);
+    // isGrounded = characterRigidbody.velocity.y == 0;
 
     if (isGrounded)
     {
       jumped = false;
     }
-  }  
+  }
+
+  private void OnDrawGizmos()
+  {
+    Gizmos.color = Color.cyan;
+    Gizmos.DrawSphere(transform.position + groundCheckOffset, capsuleCollider.radius);
+  }
 
   private Vector3 WallCheck(Vector3 moveVector)
   {
