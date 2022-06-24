@@ -63,6 +63,16 @@ public class PlayerCamera : MonoBehaviour
     }
     public void Rotate(Vector3 rotateVector)
     {
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotateVector);
+        float rotateX = Mathf.Clamp(NormalizeAngle(transform.eulerAngles.x + rotateVector.x), 300.0f, 420.0f);
+        transform.localEulerAngles = new Vector3(rotateX, transform.localEulerAngles.y, transform.localEulerAngles.z);
+    }
+
+    private float NormalizeAngle(float angle)
+    { 
+        if(angle < 180) 
+        {
+            angle += 360;
+        }
+        return angle;
     }
 }
