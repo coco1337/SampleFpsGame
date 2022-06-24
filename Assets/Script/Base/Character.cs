@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    BaseMovement baseMovement;
+    CharacterMovement baseMovement;
     public BaseCharacterController CharacterController;
+
+    [SerializeField] float speed = 200.0f;
+    [SerializeField] float jumpPower = 5.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        baseMovement = GetComponent<BaseMovement>();
+        baseMovement = GetComponent<CharacterMovement>();
 
         if (baseMovement == null)
         {
-            baseMovement = gameObject.AddComponent<BaseMovement>();
+            baseMovement = gameObject.AddComponent<CharacterMovement>();
             Debug.Log("CharacterMovement is null so create it!");
         }
         else
@@ -30,7 +33,7 @@ public class Character : MonoBehaviour
     }
 
 
-    public BaseMovement GetMovement() 
+    public CharacterMovement GetMovement() 
     {
         return baseMovement;
     }
@@ -52,7 +55,32 @@ public class Character : MonoBehaviour
         if (baseMovement != null) 
         {
             Debug.Log("Character MoveBy!");
-            baseMovement.MoveBy(moveVector);
+            baseMovement.MoveBy(moveVector * speed);
+        }
+    }
+
+    public virtual void RotateTo(Vector3 rotateVector)
+    {
+        if (baseMovement != null)
+        {
+            baseMovement.RotateTo(rotateVector);
+        }
+    }
+
+    public virtual void RotateBy(Vector3 rotateVector) 
+    {
+        if (baseMovement != null)
+        {
+            // Rotate!
+            baseMovement.RotateBy(rotateVector);
+        }
+    }
+
+    public void Jump() 
+    {
+        if (baseMovement.GetIsGrounded()) 
+        {
+            baseMovement.Jump(jumpPower);
         }
     }
 }
