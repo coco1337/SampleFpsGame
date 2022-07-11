@@ -45,9 +45,9 @@ public class PlayerCharacterController : MonoBehaviour
 
             // move
             Vector3 inputVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            if (!(Mathf.Approximately(inputVector.magnitude, 0.0f)))
+            // if (!(Mathf.Approximately(inputVector.magnitude, 0.0f)))
             {
-                PossessedCharacter.Move(inputVector);
+                PossessedCharacter.UpdatePlayerInput(inputVector);
             }
 
             // jump

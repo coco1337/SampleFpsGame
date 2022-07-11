@@ -8,6 +8,8 @@ public class Character : MonoBehaviour
 {
   public BaseCharacterController CharacterController;
 
+  [SerializeField] private Vector3 moveVector = new Vector3();
+
   [SerializeField] private float speed = 3.0f;
   [SerializeField] private float maxSpeed = 1.0f;
   [SerializeField] private float jumpPower = 5.0f;
@@ -16,6 +18,7 @@ public class Character : MonoBehaviour
   [SerializeField] private CapsuleCollider capsuleCollider;
   // 임시 영역
   [SerializeField] private Rigidbody characterRigidbody;
+  [SerializeField] private float maxSnapSpeed = 50f;
 
   // Animation Parameters
   private bool jumped = false;
@@ -33,6 +36,7 @@ public class Character : MonoBehaviour
   private Vector3 groundCheckOffset;
 
   public bool GetIsGrounded() => isGrounded;
+  public void UpdatePlayerInput(Vector3 vec) => moveVector = vec;
 
   // Start is called before the first frame update
   private void Start()
@@ -44,13 +48,14 @@ public class Character : MonoBehaviour
   }
 
   // Update is called once per frame
-  private void Update()
+  private void FixedUpdate()
   {
+    Move();
     CalculateAnimationParameters();
     ApplyAnimationParameters();
   }
 
-  public void Move(Vector3 moveVector)
+  private void Move()
   {
     var rigidMoveVector = WallCheck(speed * Time.deltaTime * ((transform.forward * moveVector.z) + (transform.right * moveVector.x)));
     characterRigidbody.MovePosition(transform.position + rigidMoveVector);
@@ -88,20 +93,37 @@ public class Character : MonoBehaviour
     // D.Log($"IsGrounded : {isGrounded}");
 
     // TODO : fix ground check on top-end of slope
-    isGrounded = Physics.CheckSphere(transform.position + groundCheckOffset, capsuleCollider.radius, 1 << LayerMask.NameToLayer("Ground"));
-    // isGrounded = characterRigidbody.velocity.y <= 0 && Physics.Raycast(transform.position, Vector3.down, height / 2 + skinWidth);
+    Debug.DrawRay(transform.position, Vector3.down * (height / 2 + skinWidth), Color.red);
+    isGrounded = characterRigidbody.velocity.y <= 0 && Physics.CheckSphere(transform.position + groundCheckOffset, capsuleCollider.radius, 1 << LayerMask.NameToLayer("Ground"));
+    isGrounded = characterRigidbody.velocity.y <= 0 && Physics.Raycast(transform.position, Vector3.down, height / 2 + skinWidth);
     // isGrounded = characterRigidbody.velocity.y == 0;
-
+    // SnapToGround();
+    
     if (isGrounded)
     {
       jumped = false;
     }
   }
 
+  private bool SnapToGround()
+  {
+    var speed = characterRigidbody.velocity.magnitude;
+    // if (speed > maxSnapSpeed) return false;
+    if (!Physics.Raycast(transform.position, Vector3.down - groundCheckOffset, out var rayHit, 1 << LayerMask.NameToLayer("Ground"))) return false;
+
+    var contactNormal = rayHit.normal;
+    var dot = Vector3.Dot(characterRigidbody.velocity, rayHit.normal);
+    if (dot > 0)
+      characterRigidbody.velocity = (characterRigidbody.velocity - rayHit.normal * dot).normalized * speed;
+
+    return true;
+  }
+
   private void OnDrawGizmos()
   {
     Gizmos.color = Color.cyan;
-    Gizmos.DrawSphere(transform.position + groundCheckOffset, capsuleCollider.radius);
+    if (characterRigidbody.velocity.y <= 0) 
+     Gizmos.DrawSphere(transform.position + groundCheckOffset, capsuleCollider.radius);
   }
 
   private Vector3 WallCheck(Vector3 moveVector)
