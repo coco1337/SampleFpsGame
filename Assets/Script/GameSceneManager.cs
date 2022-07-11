@@ -17,7 +17,7 @@ public sealed class GameSceneManager : MonoBehaviour
   // Update is called once per frame
   private void Update()
   {
-
+    
   }
 
   public void PauseGame()

@@ -27,38 +27,30 @@ public class PlayerCharacterController : MonoBehaviour
         {
             // 캐릭터의 움직임은 rotate -> move 순서로 진행
 
-            // rotate
+            // character rotate
             Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
             Vector3 characterRotateVector = new Vector3(0, mouseDelta.x, 0);
             Vector3 cameraRotateVector = new Vector3(- mouseDelta.y, 0, 0);
 
-            // Debug.Log($"mouseDelta : {mouseDelta}");
             if (!(Mathf.Approximately(characterRotateVector.magnitude, 0.0f)))
             {
-                // Debug.Log($"Rotate! : {characterRotateVector}");
-                PossessedCharacter.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
-                // playerCamera.RotateBy(characterRotateVector * Time.deltaTime * rotateSensivity);
+                PossessedCharacter.Rotate(characterRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // camera rotate
             if (!(Mathf.Approximately(cameraRotateVector.magnitude, 0.0f)))
             {
-                playerCamera.RotateBy(cameraRotateVector * Time.deltaTime * rotateSensivity);
+                playerCamera.Rotate(cameraRotateVector * Time.deltaTime * rotateSensivity);
             }
 
             // move
-            Vector3 forwardVector = playerCamera.transform.forward.normalized;
-            Vector3 rightVector = playerCamera.transform.right.normalized;
-            Vector3 inputVector = new Vector3(Input.GetAxis("Horizontal"), 0 ,Input.GetAxis("Vertical"));
-            if (!(Mathf.Approximately(inputVector.magnitude, 0.0f)))
+            Vector3 inputVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            // if (!(Mathf.Approximately(inputVector.magnitude, 0.0f)))
             {
-                Debug.Log($"Forward : {forwardVector} / Right : {rightVector}");
-                Vector3 moveVector = (forwardVector * inputVector.z) + (rightVector * inputVector.x);
-                PossessedCharacter.MoveBy(new Vector3(moveVector.x, 0, moveVector.z).normalized * Time.deltaTime);
+                PossessedCharacter.UpdatePlayerInput(inputVector);
             }
 
             // jump
-
             if (Input.GetKeyDown(KeyCode.Space)) 
             {
                 PossessedCharacter.Jump();
@@ -66,7 +58,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
         else 
         {
-            Debug.Log("No Character to Controll!");
+            D.Log("No Character to Controll!");
         }
 
     }
