@@ -119,13 +119,6 @@ public class Character : MonoBehaviour
     return true;
   }
 
-  private void OnDrawGizmos()
-  {
-    Gizmos.color = Color.cyan;
-    if (characterRigidbody.velocity.y <= 0) 
-     Gizmos.DrawSphere(transform.position + groundCheckOffset, capsuleCollider.radius);
-  }
-
   private Vector3 WallCheck(Vector3 moveVector)
   {
     // TODO : check with different height, slope
