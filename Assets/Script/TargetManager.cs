@@ -4,9 +4,9 @@ using UnityEngine;
 
 public sealed class TargetManager : MonoBehaviour
 {
-  private List<Transform> targetPositionList;
+  [SerializeField] private List<Transform> targetPositionList;
+  [SerializeField] private PlayerCharacter enemyPrefab;
 
-  private PlayerCharacter enemyPrefab;
   private List<PlayerCharacter> enemyList;
 
   // Start is called before the first frame update
